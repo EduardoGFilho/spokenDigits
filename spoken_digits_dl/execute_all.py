@@ -16,14 +16,14 @@ import sys
 
 import math
 
-
-for i in range(15,40):
-    for j in range(15,40):
+#if i starts at 15, it gives me some error
+for D_index in range(18, 40,1):
+    for T_index in range(15,40,1):
 
         ########### Configuration ###########
 
-        D = i #number of frequency points in feature matrix of dimension D x T
-        T = j #number of time points in feature matrix of dimension D x T
+        D = D_index #number of frequency points in feature matrix of dimension D x T
+        T = T_index #number of time points in feature matrix of dimension D x T
         
         #generate a comprehensible number for the experiment
         EXPERIMENT = D*(10**math.ceil(T/10)) + T #choose the experiment number as an identifier to help organizing things
