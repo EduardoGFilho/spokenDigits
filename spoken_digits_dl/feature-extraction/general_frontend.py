@@ -111,6 +111,8 @@ if __name__ == '__main__':
     X = np.zeros((num_examples, T, D)) #note I am using the transpose
     list_all_labels = [] #initialize list
 
+    speakers = []
+
     min_freq_dimension = 1e30
     min_time_dimension = 1e30
     max_freq_dimension = -1e30
@@ -119,6 +121,12 @@ if __name__ == '__main__':
         wavfile_basename = row['filename']
         wavfile = os.path.join(wav_folder, wavfile_basename)
         samplerate, audio = read(wavfile)
+
+        this_file_name = os.path.splitext(wavfile_basename)[0] 
+        tmp_speaker = str(this_file_name).split("_")[1]
+        speakers.append(tmp_speaker)
+
+
 
         if False: #enable for testing with simple signal of increasing frequency
             audio = librosa.chirp(sr=samplerate, fmin=110, fmax=22050, duration=1, linear=True)
@@ -221,7 +229,7 @@ if __name__ == '__main__':
         label_index = label_dict[this_label]
         y[i] = label_index
 
-    write_instances_to_file(output_file, X, y)
+    write_name_and_instances_to_file(output_file, X, y,speakers)
     print("Wrote file", output_file)
     if False: #if wants to double check
         print('y1',y)

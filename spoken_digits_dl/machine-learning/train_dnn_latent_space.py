@@ -65,7 +65,7 @@ if __name__ == '__main__':
     model = Sequential()
     model.add(Dense(10, input_shape=(input_dimension,), activation='relu'))
     model.add(Dense(10, activation='relu'))
-    model.add(Dense(num_classes, activation='sigmoid'))
+    model.add(Dense(num_classes, activation='relu'))
     # compile the keras model
     model.compile(loss='sparse_categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     model.summary()

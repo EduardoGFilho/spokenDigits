@@ -35,6 +35,20 @@ def read_instances_from_file(intputHDF5FileName):
     h5pyFile.close()
     return X, y
 
+def write_name_and_instances_to_file(outputHDF5FileName, X, y, name):
+    h5pyFile = h5py.File(outputHDF5FileName, 'w')
+    h5pyFile["X"] = X #store in hdf5
+    h5pyFile["y"] = y #store in hdf5
+    h5pyFile["name"] = name #store in hdf5
+    h5pyFile.close()
+    
+
+
+
+
+
+
+
 '''
 Write X and y to HDF5 file.
 '''

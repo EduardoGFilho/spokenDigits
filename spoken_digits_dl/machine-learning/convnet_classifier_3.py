@@ -104,7 +104,7 @@ model.add(Conv2D(30, (2, 2), padding="SAME", activation='relu'))
 model.add(MaxPooling2D(pool_size=(2, 2)))                 
 model.add(Dropout(dropout_probability))
 model.add(Flatten())
-model.add(Dense(numClasses, activation='softmax')) #softmax for probability
+model.add(Dense(numClasses, activation='relu')) #softmax for probability
 
 model.summary()
 

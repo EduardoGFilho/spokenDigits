@@ -26,6 +26,78 @@ import pickle
 dropout_probability = 0.0 #to combat overfitting
 numClasses = 8 #total number of labels
 
+
+
+#Substituir definição em ml_utils e chamada em fixed_dim...
+def read_name_and_instances_from_file(intputHDF5FileName):
+    h5pyFile = h5py.File(intputHDF5FileName, 'r')
+    Xtemp = h5pyFile["X"]
+    ytemp = h5pyFile["y"]
+    X = np.array(Xtemp[()])
+    y = np.array(ytemp[()])
+    name_tmp = h5pyFile["name"]
+    name = []
+    for i in range(len(name_tmp)):
+        name.append(name_tmp[i])
+    h5pyFile.close()
+    return X, y, name
+
+#Substituir definição em ml_utils e chamada em fixed_dim...
+def split_test_separated_speakers(X, y, name, test_fraction):
+    if test_fraction < 0 or test_fraction > 1:
+        raise Exception("test_fraction=", test_fraction)  
+
+    #Convert list to a set, since there are going to be repeated names
+    speakers_set = set(name)
+
+    #Find the total number of speakers
+    speakers_num = len(speakers_set)
+
+    #Find number of speakers to be in test set
+    n_speakers_test = int(round(speakers_num * test_fraction))
+
+    #Determine which speakers are going to be in the test set
+    train_speakers = list(speakers_set)
+    test_speakers = []
+
+    #Check later if this causes some off by one error
+    for i in range(n_speakers_test):
+        tmp = random.choice(train_speakers)
+        train_speakers.remove(tmp)
+        test_speakers.append(tmp)
+    
+    #Separate data, according to the speakers
+    trainX = []
+    trainy = []
+    testX = []
+    testy = []
+    train_indices = []
+    test_indices = []
+
+    #iterate for every file
+    for i in range(len(name)):
+
+        #Check if the speaker belongs to the training set
+        belongs_to_train = False
+        for i_train_speaker in train_speakers:
+            if name[i] == i_train_speaker:
+                trainX.append(X[i])
+                trainy.append(y[i])
+                train_indices.append(i)
+                belongs_to_train = True
+    
+        #If they don't belong to the training, then they belong to the test set
+        if(belongs_to_train == False):
+            testX.append(X[i])
+            testy.append(y[i])
+            test_indices.append(i)
+        
+    return np.array(trainX), np.array(testX), np.array(trainy), np.array(testy), np.array(train_indices), np.array(test_indices)
+
+
+
+
+
 '''
 Get indices for each speaker to later build speaker-disjoint sets
 '''
@@ -161,7 +233,7 @@ def define_model(input_shape):
 
     model = Sequential()
     model.add(Conv2D(num_filter_base, kernel_size=(10,10),
-                    activation='tanh',
+                    activation='relu',
                     #strides=[1,1],
                     padding="SAME",
                     #consider we have matrices images with depth = 1:
@@ -177,7 +249,7 @@ def define_model(input_shape):
     #model.add(MaxPooling2D(pool_size=(2, 2)))                 
     model.add(Dropout(dropout_probability))
     model.add(Flatten())
-    model.add(Dense(numClasses, activation='softmax')) #softmax for probability
+    model.add(Dense(numClasses, activation='relu')) #softmax for probability
 
     return model
 
@@ -212,7 +284,7 @@ def define_model_Daniel_no_LSTM(in_shape):
     z = Flatten()(loc)
     #x = Dense(20*numClasses, activation='softmax')(z)
     #y = Flatten()(x)
-    z = Dense(numClasses, activation='softmax')(z)
+    z = Dense(numClasses, activation='relu')(z)
     #x   = Bidirectional(LSTM(latent_dim, return_sequences=True))(loc)
     return Model(inputs =[inp], outputs=[z])
 
@@ -244,6 +316,6 @@ def define_model_Daniel(in_shape):
     loc = Concatenate(axis=2)(convolutions)
     x  = Bidirectional(LSTM(latent_dim, return_sequences=False))(loc)
     x = Flatten()(x)
-    z = Dense(numClasses, activation='softmax')(x)
+    z = Dense(numClasses, activation='relu')(x)
     return Model(inputs =[inp], outputs=[z])
 

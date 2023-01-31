@@ -14,7 +14,7 @@ import os
 import sys
 
 ########### Configuration ###########
-EXPERIMENT = 1 #choose the experiment number as an identifier to help organizing things
+EXPERIMENT = 2 #choose the experiment number as an identifier to help organizing things
 USE_MEYER_DATASET = False #use True to enable adopting waveform datasets for whistled speech (files JoseLuiz_caba.wav, etc.)
 if USE_MEYER_DATASET:
     NUM_CLASSES = 8 #there are 8 speakers in Prof. Meyer's dataset
@@ -24,8 +24,8 @@ FEATURES = "mel" #use "mel", "magnasco" or "stft"
 NORMALIZATION = "minmax" #use "minmax", "maggie", "std_freq" or "none"
 USE_LOGDOMAIN = "--log_domain" #use "--log_domain" or an empty string ""
 #each waveform file will be represented by a fature matrix of dimension D x T
-D = 18 #number of frequency points in feature matrix of dimension D x T
-T = 30 #number of time points in feature matrix of dimension D x T
+D = 14 #number of frequency points in feature matrix of dimension D x T
+T = 15 #number of time points in feature matrix of dimension D x T
 LATENT_DIM = 3 #dimension of latent space (after transformation)
 SUPER_EPOCHS = 2 #number of iterations of super loop
 TRIPLET_EPOCHS = 10 #number of iterations when training triplets
@@ -37,7 +37,7 @@ OUTPUT_DIR= "../outputs/" + EXPERIMENT_ID #output folder (will be created) to st
 if True: #True if it is the first time you run the frontend
     OUTPUT_ID= FEATURES + "D" + str(D) + "T" + str(T)
     #list with all commands you want to execute from the list all_scripts to be defined below
-    all_scripts_indices = [0,1,2,3,4,5,6,7] #execute all commands
+    all_scripts_indices = [0,1,2,3,4,5] #execute all commands
     #all_scripts_indices = [7] #execute only command 7
 else: #In case you have already executed the frontend and cut features
     #with signal_statistics.py to find Dmin and Dmax and later use cut_frequencies.py

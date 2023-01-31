@@ -159,7 +159,8 @@ def train(X, y, label_dict, out_folder="output", perc_test=0.2,
     reverse = dict([(v, k) for k, v in label_dict.items()]) #reverse dictionary    
     print('label_dict=',label_dict)
 
-    #num_examples, T, D = X.shape #we use transpose
+    num_examples, T, D = np.array(X).shape #we use transpose
+    """
     if type(X) == list: #X can be a list or a numpy array
         #num_examples = len(X)
         T = int(1e10)
@@ -169,7 +170,8 @@ def train(X, y, label_dict, out_folder="output", perc_test=0.2,
                 T = thisT
     else:
         num_examples, T, D = X.shape #we use transpose
-
+    """
+    
     WINDOW_PARAM = (T, D, 1) #T is num_time_frames and D is num_freq_bins
 
     #by_label is a dic with the instances of each class
@@ -370,7 +372,7 @@ if __name__ == '__main__':
     #instances_file = r'justsounds_todoscorrigidos_normalizados\spectrogramD100T30.hdf5'
     #labels_dic_file = r'justsounds_todoscorrigidos_normalizados\labels_dictionary.json'
     #X, y = read_variable_duration_instances_from_files(input_folder,df_input_data,label_dict)
-    X, y = read_instances_from_file(instances_file)
+    X, y, name = read_name_and_instances_from_file(instances_file)
     y = y.astype(int) #convert output labels to integers
     num_examples = len(X)
     num_examples, T, D = X.shape #we use the transpose
@@ -393,7 +395,7 @@ if __name__ == '__main__':
             X_train = [ X[i] for i in train_indices ]
     else:
             test_fraction = 0.2
-            X_train, X_test, y_train, y_test, train_indices, test_indices = split_into_train_test_mixed_speakers(X, y, test_fraction)
+            X_train, X_test, y_train, y_test, train_indices, test_indices = split_test_separated_speakers(X, y,name, test_fraction)
             file_with_test_indices = os.path.join(output_folder,"test_indices.csv")
             np.savetxt(file_with_test_indices, test_indices, delimiter=",")
             print("Wrote", os.path.join(output_folder,"test_indices.csv"))
